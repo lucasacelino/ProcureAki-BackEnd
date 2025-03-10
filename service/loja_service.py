@@ -9,7 +9,8 @@ from models.Endereco import Endereco
 
 loja_bp = Blueprint("lojas", __name__)
 
-@loja_bp.route("/", methods=["POST"])
+# @loja_bp.route("/", methods=["POST"])
+@loja_bp.post("/")
 def criar_loja():
     data = request.json
     endereco_data = data.get("endereco")

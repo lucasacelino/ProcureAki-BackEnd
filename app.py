@@ -1,8 +1,10 @@
-from flask import Flask
+# from flask import Flask
 from helpers.database import db
+from helpers.application import app
 from service.loja_service import loja_bp
 
-app = Flask(__name__)
+
+# app = Flask(__name__)
 app.config.from_object("config")
 
 db.init_app(app)
