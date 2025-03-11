@@ -3,12 +3,12 @@ from flask_restful import fields
 
 endereco_fields = {
     'id': fields.Integer,
-    'rua': fields.String,
-    'numero': fields.String,
+    'cep': fields.String,
+    'logradouro': fields.String,
     'bairro': fields.String,
     'cidade': fields.String,
     'estado': fields.String,
-    'cep': fields.String
+    'numero': fields.String,
 }
 
 class Endereco(db.Model):
