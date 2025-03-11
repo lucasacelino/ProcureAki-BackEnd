@@ -3,7 +3,7 @@ from flask_restful import fields
 
 categoria_fields = {
     'id': fields.Integer,
-    'nome': fields.String
+    'nome_categoria': fields.String
 }
 
 class Categoria(db.Model):
@@ -11,4 +11,4 @@ class Categoria(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     nome_categoria = db.Column(db.String(100), nullable=False)
-    lojas = db.relationship('Loja', backref='Categoria', lazy=True)
+    lojas = db.relationship('Loja', backref='categoria', lazy=True)

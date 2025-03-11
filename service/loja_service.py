@@ -23,15 +23,25 @@ def criar_loja():
         estado = endereco_data["estado"],
         numero = endereco_data["numero"]
     )
+    
+    print("Endereço salvo:")
+    print(f"CEP: {endereco.cep}")
+    print(f"Logradouro: {endereco.logradouro}")
+    print(f"Bairro: {endereco.bairro}")
+    print(f"Cidade: {endereco.cidade}")
+    print(f"Estado: {endereco.estado}")
+    print(f"Número: {endereco.numero}")
 
     db.session.add(endereco)
     db.session.commit()
     
     categoria_data = data.get("categoria")
     categoria = Categoria(
-        nome = categoria_data["nome"]
+        nome_categoria = categoria_data["nome_categoria"]
     )
     
+    print(f"Categoria: {categoria.nome_categoria}")
+    # print(f"Número: {endereco.numero}")
     db.session.add(categoria)
     db.session.commit()
 
