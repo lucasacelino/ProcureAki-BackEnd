@@ -7,7 +7,7 @@ from service.loja_service import loja_bp
 app.config.from_object("config")
 
 db.init_app(app)
-# migrate.init_app(app, db)
+migrate.init_app(app, db)
 
 with app.app_context():
     db.create_all()
