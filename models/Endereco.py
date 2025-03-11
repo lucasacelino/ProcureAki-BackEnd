@@ -17,6 +17,7 @@ class Endereco(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cep = db.Column(db.String(10), nullable=False)
     logradouro = db.Column(db.String(100), nullable=False)
+    bairro = db.Column(db.String(50), nullable=False)
     cidade = db.Column(db.String(50), nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     numero = db.Column(db.Integer, nullable=False)
