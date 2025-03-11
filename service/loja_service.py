@@ -18,6 +18,7 @@ def criar_loja():
     endereco = Endereco(
         cep = endereco_data["cep"],
         logradouro = endereco_data["logradouro"],
+        bairro = endereco_data["bairro"],
         cidade = endereco_data["cidade"],
         estado = endereco_data["estado"],
         numero = endereco_data["numero"]
