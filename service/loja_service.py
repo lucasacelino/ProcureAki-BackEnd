@@ -5,6 +5,7 @@ from helpers.database import db
 
 from models.Loja import Loja, loja_fields
 from models.Endereco import Endereco
+from models.Categoria import Categoria
 
 
 loja_bp = Blueprint("lojas", __name__)
@@ -24,6 +25,14 @@ def criar_loja():
 
     db.session.add(endereco)
     db.session.commit()
+    
+    categoria_data = data.get("categoria")
+    categoria = Categoria(
+        nome = categoria_data["nome"]
+    )
+    
+    db.session.add(categoria)
+    db.session.commit()
 
     nova_loja = Loja(
         nome = data["nome"],
@@ -32,6 +41,7 @@ def criar_loja():
         telefone = data["telefone"],
         email = data["email"],
         senha = data["senha"],
+        categoria_id = categoria.id,
         endereco_id = endereco.id
     )
 
