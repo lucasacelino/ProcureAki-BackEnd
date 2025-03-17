@@ -3,7 +3,7 @@ from helpers.database import db
 from models.Produto import Produto, produto_fields
 from flask_restful import marshal_with, reqparse
 
-produto_bp = Blueprint("produto_bp", __name__)
+produto_bp = Blueprint("produtos", __name__)
 
 parser = reqparse.RequestParser()
 parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
@@ -14,19 +14,19 @@ parser.add_argument('descricao', type=str, required=True, help="O campo 'descric
 parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 
 
-@produto_bp.route('/produtos', methods=['POST'])
+@produto_bp.post('/')
 @marshal_with(produto_fields)
 def criar_produto():
     try:
         dados = parser.parse_args()
         
         novo_produto = Produto(
-            nome=dados['nome'],
-            preco=dados['preco'],
-            quantidade=dados['quantidade'],
-            imagem_url=dados['imagem_url'],
-            descricao=dados['descricao'],
-            loja_id=dados['loja_id']
+            nome = dados['nome'],
+            preco = dados['preco'],
+            quantidade = dados['quantidade'],
+            imagem_url = dados['imagem_url'],
+            descricao = dados['descricao'],
+            loja_id = dados['loja_id']
         )
 
         db.session.add(novo_produto)
@@ -37,7 +37,7 @@ def criar_produto():
         return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
 
-@produto_bp.route('/produtos', methods=['GET'])
+@produto_bp.route('/', methods=['GET'])
 @marshal_with(produto_fields)
 def listar_produtos():
     try:
