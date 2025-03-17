@@ -29,3 +29,4 @@ class Loja(db.Model):
     categoria_id = db.Column(db.Integer, db.ForeignKey('tb_categorias.id'), nullable=False)
     endereco_id = db.Column(db.Integer, db.ForeignKey("tb_endereco_loja.id"), nullable=False)
     endereco = db.relationship("Endereco", backref=db.backref("loja", uselist=False))
+    produtos = db.relationship("Produto", back_populates="loja", cascade="all, delete-orphan")

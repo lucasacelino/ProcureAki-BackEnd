@@ -41,7 +41,6 @@ def criar_loja():
     )
     
     print(f"Categoria: {categoria.nome_categoria}")
-    # print(f"Número: {endereco.numero}")
     db.session.add(categoria)
     db.session.commit()
 
