@@ -18,6 +18,7 @@ with app.app_context():
 
 app.register_blueprint(loja_bp, url_prefix="/lojas")
 app.register_blueprint(produto_bp, url_prefix="/produtos")
+cors.init_app(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
