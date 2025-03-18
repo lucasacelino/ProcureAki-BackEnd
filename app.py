@@ -8,7 +8,6 @@ from service.produto_service import produto_bp
 
 app.config.from_object("config")
 
-cors.init_app(app)
 db.init_app(app)
 migrate.init_app(app, db)
 
