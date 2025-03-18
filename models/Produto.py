@@ -2,7 +2,7 @@ from helpers.database import db
 from flask_restful import fields
 
 produto_fields = {
-    # 'id': fields.Integer,
+    'id': fields.Integer,
     'nome': fields.String,
     'preco': fields.Float,
     'quantidade': fields.Integer,

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from helpers.database import db
 from models.Produto import Produto, produto_fields
-from flask_restful import marshal_with, reqparse
+from flask_restful import marshal, marshal_with, reqparse
 
 produto_bp = Blueprint("produtos", __name__)
 
@@ -14,11 +14,12 @@ parser.add_argument('descricao', type=str, required=True, help="O campo 'descric
 parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 
 
-@produto_bp.post('/')
+@produto_bp.post("")
 @marshal_with(produto_fields)
 def criar_produto():
     try:
         dados = parser.parse_args()
+        print(dados)
         
         novo_produto = Produto(
             nome = dados['nome'],
@@ -37,7 +38,7 @@ def criar_produto():
         return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
 
-@produto_bp.route('/', methods=['GET'])
+@produto_bp.get("")
 @marshal_with(produto_fields)
 def listar_produtos():
     try:
@@ -47,25 +48,26 @@ def listar_produtos():
         return jsonify({'erro': f'Erro ao listar produtos: {str(e)}'}), 500
 
 
-@produto_bp.route('/produtos/<int:id>', methods=['GET'])
+@produto_bp.get('<int:id>')
 @marshal_with(produto_fields)
 def buscar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
-            return jsonify({'erro': 'Produto não encontrado'}), 404
+            return {"mensagem": "Loja não encontrada"}, 404
+            # return jsonify({'erro': 'Produto não encontrado'}), 404
         return produto, 200
     except Exception as e:
-        return jsonify({'erro': f'Erro ao buscar produto: {str(e)}'}), 500
+        return {'erro': f'Erro ao buscar produto: {str(e)}'}, 500
 
 
-@produto_bp.route('/produtos/<int:id>', methods=['PUT'])
-@marshal_with(produto_fields)
+@produto_bp.put('/<int:id>')
+# @marshal_with(produto_fields)
 def atualizar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
-            return jsonify({'erro': 'Produto não encontrado'}), 404
+            return {"mensagem": "produto não encontrado"}, 404
 
         dados = parser.parse_args()
 
@@ -76,17 +78,18 @@ def atualizar_produto(id):
         produto.descricao = dados.get('descricao', produto.descricao)
 
         db.session.commit()
-        return produto, 200
+        # return produto, 200
+        return marshal(produto, produto_fields), 200
     except Exception as e:
         return jsonify({'erro': f'Erro ao atualizar produto: {str(e)}'}), 500
 
 
-@produto_bp.route('/produtos/<int:id>', methods=['DELETE'])
+@produto_bp.delete('/<int:id>')
 def deletar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
-            return jsonify({'erro': 'Produto não encontrado'}), 404
+            return {"mensagem": "produto não encontrado"}, 404
 
         db.session.delete(produto)
         db.session.commit()
