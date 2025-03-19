@@ -8,6 +8,7 @@ from service.produto_service import produto_bp
 
 app.config.from_object("config")
 
+cors.init_app(app)
 db.init_app(app)
 migrate.init_app(app, db)
 
@@ -17,7 +18,7 @@ with app.app_context():
 
 app.register_blueprint(loja_bp, url_prefix="/lojas")
 app.register_blueprint(produto_bp, url_prefix="/produtos")
-cors(app)
+# cors(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
