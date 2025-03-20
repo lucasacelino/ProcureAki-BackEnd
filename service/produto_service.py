@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
+from flask_restful import marshal, marshal_with, reqparse
+
 from helpers.database import db
 from models.Produto import Produto, produto_fields
-from flask_restful import marshal, marshal_with, reqparse
 
 produto_bp = Blueprint("produtos", __name__)
 
@@ -19,7 +20,6 @@ parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' 
 def criar_produto():
     try:
         dados = parser.parse_args()
-        print(dados)
         
         novo_produto = Produto(
             nome = dados['nome'],
@@ -34,6 +34,7 @@ def criar_produto():
         db.session.commit()
         
         return novo_produto, 201
+    
     except Exception as e:
         return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
@@ -49,14 +50,15 @@ def listar_produtos():
 
 
 @produto_bp.get('<int:id>')
-@marshal_with(produto_fields)
+# @marshal_with(produto_fields)
 def buscar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
             return {"mensagem": "Loja não encontrada"}, 404
             # return jsonify({'erro': 'Produto não encontrado'}), 404
-        return produto, 200
+        # return produto, 200
+        return marshal(produto, produto_fields), 200
     except Exception as e:
         return {'erro': f'Erro ao buscar produto: {str(e)}'}, 500
 

@@ -1,64 +1,75 @@
 from flask import Blueprint, request, jsonify
-from flask_restful import marshal_with
+from flask_restful import marshal_with, reqparse
 
 from helpers.database import db
-
 from models.Loja import Loja, loja_fields
 from models.Endereco import Endereco
 from models.Categoria import Categoria
 
-
 loja_bp = Blueprint("lojas", __name__)
+
+parser = reqparse.RequestParser()
+parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
+parser.add_argument('descricao', type=str, required=True, help="O campo 'preço' deve ser um número válido.")
+parser.add_argument('horario_funcionamento', type=str, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
+parser.add_argument('telefone', type=str, required=True, help="O campo 'imagem' é obrigatório.")
+parser.add_argument('email', type=str, required=True, help="O campo 'descricao' é obrigatório.")
+parser.add_argument('endereco', type=dict, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
+parser.add_argument('categoria', type=dict, required=True, help="O campo categoria é obrigatório")
+
 
 @loja_bp.post("/")
 def criar_loja():
-    data = request.json
-    endereco_data = data.get("endereco")
+    try:
+        
+    # data = request.json
+        dados = parser.parse_args()
+        endereco_data = dados.get("endereco")
+        if not endereco_data:
+            return jsonify({'messagem': 'é obrigatório passar os dados do endereço'})
 
-    endereco = Endereco(
-        cep = endereco_data["cep"],
-        logradouro = endereco_data["logradouro"],
-        bairro = endereco_data["bairro"],
-        cidade = endereco_data["cidade"],
-        estado = endereco_data["estado"],
-        numero = endereco_data["numero"]
-    )
+        endereco = Endereco(
+            cep = endereco_data["cep"],
+            logradouro = endereco_data["logradouro"],
+            bairro = endereco_data["bairro"],
+            cidade = endereco_data["cidade"],
+            estado = endereco_data["estado"],
+            numero = endereco_data["numero"]
+        )
+        
+        db.session.add(endereco)
+        db.session.commit()
+        
+        categoria_data = dados.get("categoria")
+        if not categoria_data:
+            return jsonify({'mensagem': 'É obrigatório informar a categoria'})
+        
+        categoria = Categoria(
+            nome_categoria = categoria_data["nome_categoria"]
+        )
+        
+        # print(f"Categoria: {categoria.nome_categoria}")
+        db.session.add(categoria)
+        db.session.commit()
+
+        nova_loja = Loja(
+            nome = dados["nome"],
+            descricao = dados["descricao"],
+            horario_funcionamento = dados["horario_funcionamento"],
+            telefone = dados["telefone"],
+            email = dados["email"],
+            senha = dados["senha"],
+            categoria_id = categoria.id,
+            endereco_id = endereco.id
+        )
+
+        db.session.add(nova_loja)
+        db.session.commit()
+
+        return jsonify({"message": "Loja cadastrada com sucesso!"}), 201
     
-    print("Endereço salvo:")
-    print(f"CEP: {endereco.cep}")
-    print(f"Logradouro: {endereco.logradouro}")
-    print(f"Bairro: {endereco.bairro}")
-    print(f"Cidade: {endereco.cidade}")
-    print(f"Estado: {endereco.estado}")
-    print(f"Número: {endereco.numero}")
-
-    db.session.add(endereco)
-    db.session.commit()
-    
-    categoria_data = data.get("categoria")
-    categoria = Categoria(
-        nome_categoria = categoria_data["nome_categoria"]
-    )
-    
-    print(f"Categoria: {categoria.nome_categoria}")
-    db.session.add(categoria)
-    db.session.commit()
-
-    nova_loja = Loja(
-        nome = data["nome"],
-        descricao = data["descricao"],
-        horario_funcionamento = data["horario_funcionamento"],
-        telefone = data["telefone"],
-        email = data["email"],
-        senha = data["senha"],
-        categoria_id = categoria.id,
-        endereco_id = endereco.id
-    )
-
-    db.session.add(nova_loja)
-    db.session.commit()
-
-    return jsonify({"message": "Loja cadastrada com sucesso!"}), 201
+    except Exception as e:
+        return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
 
 @loja_bp.get("/")
@@ -71,27 +82,36 @@ def getLojaPorId():
 @loja_bp.put("/<int:loja_id>")
 @marshal_with(loja_fields)
 def atualizarDadosLoja(loja_id):
-    loja = Loja.query.get(loja_id)
-    if not loja:
-        return {"mensagem": "Loja não encontrada"}, 404
+    try:
+        loja = Loja.query.get(loja_id)
+        if not loja:
+            return {"mensagem": "Loja não encontrada"}, 404
 
-    dados = request.json
-    loja.nome = dados.get("nome", loja.nome)
-    loja.descricao = dados.get("descricao", loja.descricao)
-    loja.horario_funcionamento = dados.get("horario_funcionamento", loja.horario_funcionamento)
-    loja.telefone = dados.get("telefone", loja.telefone)
-    loja.email = dados.get("email", loja.email)
+        dados = request.json
+        loja.nome = dados.get("nome", loja.nome)
+        loja.descricao = dados.get("descricao", loja.descricao)
+        loja.horario_funcionamento = dados.get("horario_funcionamento", loja.horario_funcionamento)
+        loja.telefone = dados.get("telefone", loja.telefone)
+        loja.email = dados.get("email", loja.email)
 
-    db.session.commit()
-    return loja, 200
+        db.session.commit()
+        return loja, 200
+    except Exception as e:
+        return jsonify({'erro': f'Erro ao atualizar loja: {str(e)}'}), 500
 
 
 @loja_bp.delete('/<int:loja_id>')
 def deletar_loja(loja_id):
-    loja = Loja.query.get(loja_id)
-    if not loja:
-        return {"mensagem": "Loja não encontrada"}, 404
+    try:
+        loja = Loja.query.get(loja_id)
+        if not loja:
+            return {"mensagem": "Loja não encontrada"}, 404
 
-    db.session.delete(loja)
-    db.session.commit()
-    return {"mensagem": "Loja deletada com sucesso"}, 200
+        db.session.delete(loja)
+        db.session.commit()
+        return {"mensagem": "Loja deletada com sucesso"}, 200
+    
+    except Exception as e:
+        # return {"mensagem": "Loja deletada com sucesso"}, 200
+        return jsonify({'erro': f'Erro ao deletar loja: {str(e)}'}), 500
+
