@@ -14,6 +14,7 @@ parser.add_argument('descricao', type=str, required=True, help="O campo 'preço'
 parser.add_argument('horario_funcionamento', type=str, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
 parser.add_argument('telefone', type=str, required=True, help="O campo 'imagem' é obrigatório.")
 parser.add_argument('email', type=str, required=True, help="O campo 'descricao' é obrigatório.")
+parser.add_argument('senha', type=str, required=True, help="O campo 'senha' é obrigatório.")
 parser.add_argument('endereco', type=dict, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 parser.add_argument('categoria', type=dict, required=True, help="O campo categoria é obrigatório")
 
@@ -69,7 +70,7 @@ def criar_loja():
         return jsonify({"message": "Loja cadastrada com sucesso!"}), 201
     
     except Exception as e:
-        return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
+        return jsonify({'erro': f'Erro ao criar Loja: {str(e)}'}), 500
 
 
 @loja_bp.get("/")
