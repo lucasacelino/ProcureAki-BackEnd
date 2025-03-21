@@ -8,6 +8,7 @@ from models.Categoria import categoria_fields
 loja_fields = {
     'id': fields.Integer,
     'nome': fields.String,
+    'cnpj': fields.String,
     'descricao': fields.String,
     'horario_funcionamento': fields.String,
     'telefone': fields.String,
