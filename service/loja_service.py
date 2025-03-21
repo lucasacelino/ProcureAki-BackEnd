@@ -19,7 +19,7 @@ parser.add_argument('endereco', type=dict, required=True, help="O campo 'loja_id
 parser.add_argument('categoria', type=dict, required=True, help="O campo categoria é obrigatório")
 
 
-@loja_bp.post("/")
+@loja_bp.post("")
 def criar_loja():
     try:
         
@@ -115,4 +115,3 @@ def deletar_loja(loja_id):
     except Exception as e:
         # return {"mensagem": "Loja deletada com sucesso"}, 200
         return jsonify({'erro': f'Erro ao deletar loja: {str(e)}'}), 500
-
