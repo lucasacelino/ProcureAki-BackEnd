@@ -6,7 +6,7 @@ produto_fields = {
     'nome': fields.String,
     'preco': fields.Float,
     'quantidade': fields.Integer,
-    'imagem_url': fields.String,
+    'imagem_base64': fields.String,
     'descricao': fields.String,
     'loja_id': fields.Integer
 }
@@ -18,7 +18,8 @@ class Produto(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
-    imagem_url = db.Column(db.String(100), nullable=False)
+    # imagem_url = db.Column(db.String(100), nullable=False)
+    imagem_base64 = db.Column(db.Text, nullable=False)
     descricao =  db.Column(db.String(300), nullable=False)
     loja_id = db.Column(db.Integer, db.ForeignKey('tb_lojas.id'), nullable=False)
     loja = db.relationship("Loja", back_populates="produtos")
