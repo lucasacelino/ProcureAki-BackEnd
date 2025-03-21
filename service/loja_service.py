@@ -10,6 +10,7 @@ loja_bp = Blueprint("lojas", __name__)
 
 parser = reqparse.RequestParser()
 parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
+parser.add_argument('cnpj', type=str, required=True, help="O campo 'nome' é obrigatório.")
 parser.add_argument('descricao', type=str, required=True, help="O campo 'preço' deve ser um número válido.")
 parser.add_argument('horario_funcionamento', type=str, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
 parser.add_argument('telefone', type=str, required=True, help="O campo 'imagem' é obrigatório.")
@@ -55,6 +56,7 @@ def criar_loja():
 
         nova_loja = Loja(
             nome = dados["nome"],
+            cnpj = dados["cnpj"],
             descricao = dados["descricao"],
             horario_funcionamento = dados["horario_funcionamento"],
             telefone = dados["telefone"],
