@@ -100,6 +100,7 @@ def atualizarDadosLoja(loja_id):
 
         db.session.commit()
         return loja, 200
+    
     except Exception as e:
         return jsonify({'erro': f'Erro ao atualizar loja: {str(e)}'}), 500
 
