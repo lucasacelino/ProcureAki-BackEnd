@@ -1,5 +1,7 @@
 from helpers.database import db
+
 from flask_restful import fields
+
 
 produto_fields = {
     'id': fields.Integer,

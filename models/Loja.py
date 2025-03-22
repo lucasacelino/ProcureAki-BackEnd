@@ -3,6 +3,7 @@ from flask_restful import fields
 
 from models.Endereco import endereco_fields
 from models.Categoria import categoria_fields
+from models.Localizacao import localizacao_fields
 
 
 loja_fields = {
@@ -15,7 +16,8 @@ loja_fields = {
     'telefone': fields.String,
     'email': fields.String,
     'endereco': fields.Nested(endereco_fields),
-    'categoria': fields.Nested(categoria_fields)
+    'categoria': fields.Nested(categoria_fields),
+    'localizacao': fields.Nested(localizacao_fields)
 }
 
 class Loja(db.Model):
@@ -31,5 +33,7 @@ class Loja(db.Model):
     senha = db.Column(db.String(255), nullable=False)
     categoria_id = db.Column(db.Integer, db.ForeignKey('tb_categorias.id'), nullable=False)
     endereco_id = db.Column(db.Integer, db.ForeignKey("tb_endereco_loja.id"), nullable=False)
+    localizacao_id = db.Column(db.Integer, db.ForeignKey("tb_localizacoes.id"), unique=True, nullable=False)
+    localizacao = db.relationship("Localizacao", backref=db.backref("loja", uselist=False))
     endereco = db.relationship("Endereco", backref=db.backref("loja", uselist=False))
     produtos = db.relationship("Produto", back_populates="loja", cascade="all, delete-orphan")

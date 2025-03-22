@@ -5,6 +5,7 @@ from helpers.database import db
 from models.Loja import Loja, loja_fields
 from models.Endereco import Endereco
 from models.Categoria import Categoria
+from models.Localizacao import Localizacao
 
 loja_bp = Blueprint("lojas", __name__)
 
@@ -18,6 +19,7 @@ parser.add_argument('email', type=str, required=True, help="O campo 'descricao' 
 parser.add_argument('senha', type=str, required=True, help="O campo 'senha' é obrigatório.")
 parser.add_argument('endereco', type=dict, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 parser.add_argument('categoria', type=dict, required=True, help="O campo categoria é obrigatório")
+parser.add_argument('localizacao', type=dict, required=True, help="o campo localização é obrigatório")
 
 
 @loja_bp.post("")
@@ -28,8 +30,7 @@ def criar_loja():
         dados = parser.parse_args()
         endereco_data = dados.get("endereco")
         if not endereco_data:
-            return jsonify({'messagem': 'é obrigatório passar os dados do endereço'})
-
+            return jsonify({'messagem': 'É obrigatório passar os dados do endereço'})
         endereco = Endereco(
             cep = endereco_data["cep"],
             logradouro = endereco_data["logradouro"],
@@ -38,22 +39,31 @@ def criar_loja():
             estado = endereco_data["estado"],
             numero = endereco_data["numero"]
         )
-        
         db.session.add(endereco)
         db.session.commit()
+        
         
         categoria_data = dados.get("categoria")
         if not categoria_data:
             return jsonify({'mensagem': 'É obrigatório informar a categoria'})
-        
         categoria = Categoria(
             nome_categoria = categoria_data["nome_categoria"]
         )
-        
-        # print(f"Categoria: {categoria.nome_categoria}")
         db.session.add(categoria)
         db.session.commit()
 
+
+        localizacao_data = dados.get("localizacao")
+        if not localizacao_data:
+            return jsonify({'mensagem': 'É obrigatório informar a localização'})
+        localizacao = Localizacao(
+            latitude = localizacao_data["latitude"],
+            longitude = localizacao_data["longitude"]
+        )
+        db.session.add(localizacao)
+        db.session.commit()
+        
+        
         nova_loja = Loja(
             nome = dados["nome"],
             cnpj = dados["cnpj"],
@@ -63,7 +73,8 @@ def criar_loja():
             email = dados["email"],
             senha = dados["senha"],
             categoria_id = categoria.id,
-            endereco_id = endereco.id
+            endereco_id = endereco.id,
+            localizao_id = localizacao.id
         )
 
         db.session.add(nova_loja)
