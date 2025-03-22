@@ -93,6 +93,7 @@ def atualizarDadosLoja(loja_id):
         dados = request.json
         loja.nome = dados.get("nome", loja.nome)
         loja.descricao = dados.get("descricao", loja.descricao)
+        loja.senha = dados.get("senha", loja.senha)
         loja.horario_funcionamento = dados.get("horario_funcionamento", loja.horario_funcionamento)
         loja.telefone = dados.get("telefone", loja.telefone)
         loja.email = dados.get("email", loja.email)
