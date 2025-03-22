@@ -5,6 +5,7 @@ from helpers.cors import cors
 
 from service.loja_service import loja_bp
 from service.produto_service import produto_bp
+from service.categoria_service import categorias_bp
 
 app.config.from_object("config")
 
@@ -18,6 +19,7 @@ with app.app_context():
 
 app.register_blueprint(loja_bp, url_prefix="/lojas")
 app.register_blueprint(produto_bp, url_prefix="/produtos")
+app.register_blueprint(categorias_bp, url_prefix="/categorias")
 
 @app.after_request
 def add_cors_headers(response):

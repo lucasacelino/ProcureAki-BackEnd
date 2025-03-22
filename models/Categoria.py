@@ -1,4 +1,5 @@
 from helpers.database import db
+
 from flask_restful import fields
 
 categoria_fields = {

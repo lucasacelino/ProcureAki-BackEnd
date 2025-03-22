@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify
 from flask_restful import marshal, marshal_with, reqparse
 from werkzeug.datastructures import FileStorage
 import base64
