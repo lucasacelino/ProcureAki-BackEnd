@@ -92,7 +92,8 @@ def getLojas():
 
 
 @loja_bp.get("/<string:nomeCategoria>")
-def getLojaCategoria(nomeCategoria):
+@marshal_with(loja_fields)
+def getLojasPorCategoria(nomeCategoria):
     # Validação do nome da categoria (opcional, se necessário)
     if not nomeCategoria:
         return jsonify({"mensagem": "O nome da categoria é obrigatório."}), 400
@@ -105,7 +106,8 @@ def getLojaCategoria(nomeCategoria):
         return jsonify({"mensagem": f"Nenhuma loja encontrada para a categoria '{nomeCategoria}'."}), 404
 
     # Retorna as lojas no formato JSON usando marshal
-    return jsonify([marshal(loja, loja_fields) for loja in lojas])
+    # return jsonify([marshal(loja, loja_fields) for loja in lojas])
+    return lojas
 
 
 @loja_bp.put("/<int:loja_id>")
