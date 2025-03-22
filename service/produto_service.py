@@ -12,7 +12,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
 parser.add_argument('preco', type=float, required=True, help="O campo 'preço' deve ser um número válido.")
 parser.add_argument('quantidade', type=int, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
-# parser.add_argument('imagem_url', type=str, required=True, help="O campo 'imagem' é obrigatório.")
 parser.add_argument('imagem_base64', type=FileStorage, location='files', required=True, help="Imagem do produto é obrigatória")
 parser.add_argument('descricao', type=str, required=True, help="O campo 'descricao' é obrigatório.")
 parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
@@ -27,7 +26,6 @@ def criar_produto():
         arquivo_imagem = dados['imagem_base64']
         if arquivo_imagem:
             imagem_base64 = base64.b64encode(arquivo_imagem.read()).decode('utf-8')
-            # mime_type = arquivo_imagem.mimetype  # Opcional: salvar o tipo MIME
         else:
             return {'erro': 'Nenhuma imagem enviada'}, 400
         

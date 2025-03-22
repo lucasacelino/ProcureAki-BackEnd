@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_restful import marshal_with, reqparse
+from flask_restful import marshal_with, reqparse, marshal
 
 from helpers.database import db
 from models.Loja import Loja, loja_fields
@@ -25,8 +25,6 @@ parser.add_argument('localizacao', type=dict, required=True, help="o campo local
 @loja_bp.post("")
 def criar_loja():
     try:
-        
-    # data = request.json
         dados = parser.parse_args()
         endereco_data = dados.get("endereco")
         if not endereco_data:
@@ -88,9 +86,26 @@ def criar_loja():
 
 @loja_bp.get("/")
 @marshal_with(loja_fields)
-def getLojaPorId():
+def getLojas():
     lojas = Loja.query.all()
     return lojas
+
+
+@loja_bp.get("/<string:nomeCategoria>")
+def getLojaCategoria(nomeCategoria):
+    # Validação do nome da categoria (opcional, se necessário)
+    if not nomeCategoria:
+        return jsonify({"mensagem": "O nome da categoria é obrigatório."}), 400
+
+    # Consulta as lojas da categoria especificada
+    lojas = Loja.query.join(Categoria).filter(Categoria.nome_categoria == nomeCategoria).all()
+
+    # Verifica se há lojas para a categoria
+    if not lojas:
+        return jsonify({"mensagem": f"Nenhuma loja encontrada para a categoria '{nomeCategoria}'."}), 404
+
+    # Retorna as lojas no formato JSON usando marshal
+    return jsonify([marshal(loja, loja_fields) for loja in lojas])
 
 
 @loja_bp.put("/<int:loja_id>")
@@ -128,5 +143,4 @@ def deletar_loja(loja_id):
         return {"mensagem": "Loja deletada com sucesso"}, 200
     
     except Exception as e:
-        # return {"mensagem": "Loja deletada com sucesso"}, 200
         return jsonify({'erro': f'Erro ao deletar loja: {str(e)}'}), 500
