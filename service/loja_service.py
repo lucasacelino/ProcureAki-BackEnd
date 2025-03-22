@@ -74,7 +74,7 @@ def criar_loja():
             senha = dados["senha"],
             categoria_id = categoria.id,
             endereco_id = endereco.id,
-            localizao_id = localizacao.id
+            localizacao_id = localizacao.id
         )
 
         db.session.add(nova_loja)
