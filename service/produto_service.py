@@ -41,7 +41,7 @@ def criar_produto():
         # imagem_base64 = dados['imagem_base64']
         # if not imagem_base64:
         #     return {'erro': 'Nenhuma imagem enviada'}, 400
-        imagem_url = dados['imagem_base64']
+        imagem_url = dados['imagem_url']
         print(imagem_url)
         response = requests.get(imagem_url)
         if response.status_code != 200:
@@ -115,7 +115,7 @@ def atualizar_produto(id):
         produto.nome = dados.get('nome', produto.nome)
         produto.preco = dados.get('preco', produto.preco)
         produto.quantidade = dados.get('quantidade', produto.quantidade)
-        produto.imagem_base64 = dados.get('imagem_bas64', produto.imagem_url)
+        produto.imagem_url = dados.get('imagem_url', produto.imagem_url)
         produto.descricao = dados.get('descricao', produto.descricao)
 
         db.session.commit()
