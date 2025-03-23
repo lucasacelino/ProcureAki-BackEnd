@@ -13,6 +13,7 @@ parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obr
 parser.add_argument('preco', type=float, required=True, help="O campo 'preço' deve ser um número válido.")
 parser.add_argument('quantidade', type=int, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
 parser.add_argument('imagem_base64', type=FileStorage, location='files', required=True, help="Imagem do produto é obrigatória")
+# parser.add_argument('imagem_base64', type=str, required=True, help="Imagem do produto é obrigatória")
 parser.add_argument('descricao', type=str, required=True, help="O campo 'descricao' é obrigatório.")
 parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 
@@ -23,11 +24,16 @@ def criar_produto():
     try:
         dados = parser.parse_args()
         
-        arquivo_imagem = dados['imagem_base64']
+        # arquivo_imagem = dados['imagem_base64']
+        arquivo_imagem: FileStorage = dados['imagem_base64']
         if arquivo_imagem:
             imagem_base64 = base64.b64encode(arquivo_imagem.read()).decode('utf-8')
         else:
             return {'erro': 'Nenhuma imagem enviada'}, 400
+        
+        # imagem_base64 = dados['imagem_base64']
+        # if not imagem_base64:
+        #     return {'erro': 'Nenhuma imagem enviada'}, 400
         
         novo_produto = Produto(
             nome = dados['nome'],
