@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 from flask_restful import marshal, marshal_with, reqparse
 from werkzeug.utils import secure_filename
 import os
+from dotenv import load_dotenv
 
 import cloudinary
 import cloudinary.uploader
@@ -15,11 +16,17 @@ import requests
 from helpers.database import db
 from models.Produto import Produto, produto_fields
 
+load_dotenv()
+
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
     api_key=os.getenv('CLOUDINARY_API_KEY'),
     api_secret=os.getenv('CLOUDINARY_API_SECRET')
 )
+
+print("Cloud Name:", os.getenv('CLOUDINARY_CLOUD_NAME'))
+print("API Key:", os.getenv('CLOUDINARY_API_KEY'))
+print("API Secret:", os.getenv('CLOUDINARY_API_SECRET'))
 
 produto_bp = Blueprint("produtos", __name__)
 
