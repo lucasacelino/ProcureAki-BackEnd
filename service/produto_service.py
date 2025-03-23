@@ -2,12 +2,24 @@ from flask import Blueprint, jsonify
 from flask_restful import marshal, marshal_with, reqparse
 from werkzeug.utils import secure_filename
 import os
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+# Configurações do Cloudinary
 # from werkzeug.datastructures import FileStorage
 # import base64
 import requests
 
 from helpers.database import db
 from models.Produto import Produto, produto_fields
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 produto_bp = Blueprint("produtos", __name__)
 
@@ -29,37 +41,39 @@ parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' 
 @marshal_with(produto_fields)
 def criar_produto():
     try:
+        # dados = parser.parse_args()
+        # imagem_url = dados['imagem_url']
+        # print(imagem_url)
+        # response = requests.get(imagem_url)
+        # if response.status_code != 200:
+        #     return {'erro': 'Não foi possível baixar a imagem'}, 400
+        
+        # filename = secure_filename(imagem_url.split('/')[-1].split('?')[0]) 
+        # print(f"Nome do arquivo gerado: {filename}")
+        # if not allowed_file(filename):
+        #     return {'erro': 'Formato de imagem não permitido'}, 400
+
+        # if not os.path.exists(UPLOAD_FOLDER):
+        #     os.makedirs(UPLOAD_FOLDER)
+        # filepath = os.path.join(UPLOAD_FOLDER, filename)
+        # with open(filepath, 'wb') as f:
+        #     f.write(response.content)
+        
         dados = parser.parse_args()
-        
-        # # arquivo_imagem = dados['imagem_base64']
-        # arquivo_imagem: FileStorage = dados['imagem_base64']
-        # if arquivo_imagem:
-        #     imagem_base64 = base64.b64encode(arquivo_imagem.read()).decode('utf-8')
-        # else:
-        #     return {'erro': 'Nenhuma imagem enviada'}, 400
-        
-        # imagem_base64 = dados['imagem_base64']
-        # if not imagem_base64:
-        #     return {'erro': 'Nenhuma imagem enviada'}, 400
         imagem_url = dados['imagem_url']
         print(imagem_url)
         response = requests.get(imagem_url)
         if response.status_code != 200:
             return {'erro': 'Não foi possível baixar a imagem'}, 400
         
-        filename = secure_filename(imagem_url.split('/')[-1].split('?')[0])  # Remove query params da URL
+        filename = secure_filename(imagem_url.split('/')[-1].split('?')[0]) 
         print(f"Nome do arquivo gerado: {filename}")
-        # Verifica se a extensão é permitida
         if not allowed_file(filename):
             return {'erro': 'Formato de imagem não permitido'}, 400
 
-        if not os.path.exists(UPLOAD_FOLDER):
-            os.makedirs(UPLOAD_FOLDER)
-        # Salva a imagem localmente
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        with open(filepath, 'wb') as f:
-            f.write(response.content)
-        # print(imagem_base64)
+        # Faz upload da imagem para o Cloudinary
+        upload_result = cloudinary.uploader.upload(imagem_url)
+        cloudinary_url = upload_result['secure_url']
         
         
         novo_produto = Produto(
@@ -67,7 +81,8 @@ def criar_produto():
             preco = dados['preco'],
             quantidade = dados['quantidade'],
             # imagem_base64 = imagem_base64,
-            imagem_url = f"/{UPLOAD_FOLDER}/{filename}",
+            # imagem_url = f"/{UPLOAD_FOLDER}/{filename}",
+            imagem_url = cloudinary_url,
             descricao = dados['descricao'],
             loja_id = dados['loja_id']
         )
