@@ -20,7 +20,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
 parser.add_argument('preco', type=float, required=True, help="O campo 'preço' deve ser um número válido.")
 parser.add_argument('quantidade', type=int, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
-parser.add_argument('imagem_base64', type=str, required=True, help="URL da imagem é obrigatória.")
+parser.add_argument('imagem_url', type=str, required=True, help="URL da imagem é obrigatória.")
 parser.add_argument('descricao', type=str, required=True, help="O campo 'descricao' é obrigatório.")
 parser.add_argument('loja_id', type=int, required=True, help="O campo 'loja_id' é obrigatório e deve ser um número inteiro.")
 
@@ -41,13 +41,13 @@ def criar_produto():
         # imagem_base64 = dados['imagem_base64']
         # if not imagem_base64:
         #     return {'erro': 'Nenhuma imagem enviada'}, 400
-        imagem_base64 = dados['imagem_base64']
-        print(imagem_base64)
-        response = requests.get(imagem_base64)
+        imagem_url = dados['imagem_base64']
+        print(imagem_url)
+        response = requests.get(imagem_url)
         if response.status_code != 200:
             return {'erro': 'Não foi possível baixar a imagem'}, 400
         
-        filename = secure_filename(imagem_base64.split('/')[-1].split('?')[0])  # Remove query params da URL
+        filename = secure_filename(imagem_url.split('/')[-1].split('?')[0])  # Remove query params da URL
         print(f"Nome do arquivo gerado: {filename}")
         # Verifica se a extensão é permitida
         if not allowed_file(filename):
@@ -67,7 +67,7 @@ def criar_produto():
             preco = dados['preco'],
             quantidade = dados['quantidade'],
             # imagem_base64 = imagem_base64,
-            imagem_base64 = f"/{UPLOAD_FOLDER}/{filename}",
+            imagem_url = f"/{UPLOAD_FOLDER}/{filename}",
             descricao = dados['descricao'],
             loja_id = dados['loja_id']
         )
@@ -78,6 +78,7 @@ def criar_produto():
         return novo_produto, 201
     
     except Exception as e:
+        print("Erro ao criar produto:", str(e))
         return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
 
