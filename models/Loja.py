@@ -7,8 +7,10 @@ from models.Categoria import categoria_fields
 from models.Localizacao import localizacao_fields
 
 from datetime import datetime
+# from marshmallow import fields, Field
+from marshmallow.fields import Field
 
-class TimeField(fields.Field):
+class TimeField(Field):
     def _serialize(self, value):
         if value is None:
             return None
