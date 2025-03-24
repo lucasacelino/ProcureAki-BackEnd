@@ -15,8 +15,8 @@ parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obr
 parser.add_argument('cnpj', type=str, required=True, help="O campo 'nome' é obrigatório.")
 parser.add_argument('descricao', type=str, required=True, help="O campo 'preço' deve ser um número válido.")
 # parser.add_argument('horario_funcionamento', type=str, required=True, help="O campo 'quantidade' deve ser um número inteiro.")
-parser.add_argument("horario_inicio", type=str, required=True, help="O horário de ínicio deve ser incluido")
-parser.add_argument("horario_fim", type=str, required=True, help="O horário de fim deve ser incluido")
+parser.add_argument("horario_abertura", type=str, required=True, help="O horário de ínicio deve ser incluido")
+parser.add_argument("horario_fechamento", type=str, required=True, help="O horário de fim deve ser incluido")
 parser.add_argument('telefone', type=str, required=True, help="O campo 'imagem' é obrigatório.")
 parser.add_argument('email', type=str, required=True, help="O campo 'descricao' é obrigatório.")
 parser.add_argument('senha', type=str, required=True, help="O campo 'senha' é obrigatório.")
@@ -73,8 +73,8 @@ def criar_loja():
             nome = dados["nome"],
             cnpj = dados["cnpj"],
             descricao = dados["descricao"],
-            horario_inicio = dados["horario_inicio"],
-            horario_fim = dados["horario_fim"],
+            horario_abertura = dados["horario_abertura"],
+            horario_fechamento = dados["horario_fechamento"],
             # horario_funcionamento = dados["horario_funcionamento"],
             telefone = dados["telefone"],
             email = dados["email"],

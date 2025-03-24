@@ -28,8 +28,8 @@ loja_fields = {
     'cnpj': fields.String,
     'senha': fields.String,
     'descricao': fields.String,
-    'horario_inicio': TimeField(),  
-    'horario_fim': TimeField(),
+    'horario_abertura': TimeField(),  
+    'horario_fechamento': TimeField(),
     'telefone': fields.String,
     'email': fields.String,
     'endereco': fields.Nested(endereco_fields),
@@ -47,8 +47,8 @@ class Loja(db.Model):
     # horario_funcionamento = db.Column(db.String(50), nullable=False)
     # horario_inicio = db.Column(db.String(50), nullable=False)  # Novo campo
     # horario_fim = db.Column(db.String(50), nullable=False)
-    horario_inicio = db.Column(db.Time, nullable=False)  # Alterado para time
-    horario_fim = db.Column(db.Time, nullable=False)
+    horario_abertura = db.Column(db.Time, nullable=False)  # Alterado para time
+    horario_fechamento = db.Column(db.Time, nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(255), nullable=False)
