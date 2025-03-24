@@ -98,6 +98,19 @@ def getLojas():
     lojas = Loja.query.all()
     return lojas
 
+@loja_bp.get('<int:id>')
+def geLojaPorid(id):
+    try:
+        loja = Loja.query.get(id)
+        if not loja:
+            logger.info(f"Produto não encontrado {loja}")
+            return {"mensagem": "Loja não encontrada"}, 404
+        return marshal(loja, loja_fields), 200
+    
+    except Exception as e:
+        logger.error("Erro ao buscar Loja")
+        return {'erro': f'Erro ao buscar loja: {str(e)}'}, 500
+
 
 @loja_bp.get("/<string:nomeCategoria>")
 @marshal_with(loja_fields)
