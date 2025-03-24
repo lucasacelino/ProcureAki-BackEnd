@@ -7,20 +7,31 @@ from models.Categoria import categoria_fields
 from models.Localizacao import localizacao_fields
 
 from datetime import datetime
-# from marshmallow import fields, Field
+
 from marshmallow.fields import Field
 
-class TimeField(Field):
-    def _serialize(self, value):
+# class TimeField(Field):
+#     def _serialize(self, value):
+#         if value is None:
+#             return None
+#         return value.strftime('%H:%M')
+
+#     def _deserialize(self, value):
+#         try:
+#             return datetime.strptime(value, '%H:%M').time()
+#         except ValueError as error:
+#             return jsonify({'error': str(error)})
+
+from flask_restful import fields as rest_fields
+
+class TimeField(rest_fields.Raw):
+    """Campo customizado para serializar/desserializar objetos time no formato HH:MM."""
+
+    def format(self, value):
+        """Converte um objeto time para string (serialização)."""
         if value is None:
             return None
         return value.strftime('%H:%M')
-
-    def _deserialize(self, value):
-        try:
-            return datetime.strptime(value, '%H:%M').time()
-        except ValueError as error:
-            return jsonify({'error': str(error)})
 
 loja_fields = {
     'id': fields.Integer,
@@ -44,10 +55,7 @@ class Loja(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     cnpj = db.Column(db.String(20), nullable=False)
     descricao = db.Column(db.Text, nullable=False)
-    # horario_funcionamento = db.Column(db.String(50), nullable=False)
-    # horario_inicio = db.Column(db.String(50), nullable=False)  # Novo campo
-    # horario_fim = db.Column(db.String(50), nullable=False)
-    horario_abertura = db.Column(db.Time, nullable=False)  # Alterado para time
+    horario_abertura = db.Column(db.Time, nullable=False)  
     horario_fechamento = db.Column(db.Time, nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)

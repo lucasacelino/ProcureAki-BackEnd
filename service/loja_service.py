@@ -75,7 +75,6 @@ def criar_loja():
             descricao = dados["descricao"],
             horario_abertura = dados["horario_abertura"],
             horario_fechamento = dados["horario_fechamento"],
-            # horario_funcionamento = dados["horario_funcionamento"],
             telefone = dados["telefone"],
             email = dados["email"],
             senha = dados["senha"],
@@ -101,6 +100,7 @@ def criar_loja():
 def getLojas():
     lojas = Loja.query.all()
     return lojas
+
 
 @loja_bp.get('<int:id>')
 def geLojaPorid(id):
