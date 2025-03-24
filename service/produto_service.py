@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify
 from flask_restful import marshal, marshal_with, reqparse
 from werkzeug.utils import secure_filename
+import requests
+
 import os
 from dotenv import load_dotenv
 
@@ -8,32 +10,23 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-# Configurações do Cloudinary
-# from werkzeug.datastructures import FileStorage
-# import base64
-import requests
-
 from helpers.database import db
+from helpers.logging import logger
 from models.Produto import Produto, produto_fields
 
 load_dotenv()
-
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
     api_key=os.getenv('CLOUDINARY_API_KEY'),
     api_secret=os.getenv('CLOUDINARY_API_SECRET')
 )
 
-print("Cloud Name:", os.getenv('CLOUDINARY_CLOUD_NAME'))
-print("API Key:", os.getenv('CLOUDINARY_API_KEY'))
-print("API Secret:", os.getenv('CLOUDINARY_API_SECRET'))
-
 produto_bp = Blueprint("produtos", __name__)
 
-UPLOAD_FOLDER = 'uploads'  # Pasta onde as imagens serão salvas
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = 'uploads' 
+EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
 
 parser = reqparse.RequestParser()
 parser.add_argument('nome', type=str, required=True, help="O campo 'nome' é obrigatório.")
@@ -78,17 +71,13 @@ def criar_produto():
         if not allowed_file(filename):
             return {'erro': 'Formato de imagem não permitido'}, 400
 
-        # Faz upload da imagem para o Cloudinary
         upload_result = cloudinary.uploader.upload(imagem_url)
         cloudinary_url = upload_result['secure_url']
-        
         
         novo_produto = Produto(
             nome = dados['nome'],
             preco = dados['preco'],
             quantidade = dados['quantidade'],
-            # imagem_base64 = imagem_base64,
-            # imagem_url = f"/{UPLOAD_FOLDER}/{filename}",
             imagem_url = cloudinary_url,
             descricao = dados['descricao'],
             loja_id = dados['loja_id']
@@ -97,10 +86,11 @@ def criar_produto():
         db.session.add(novo_produto)
         db.session.commit()
         
+        logger.info("Produto criado com sucesso")
         return novo_produto, 201
     
     except Exception as e:
-        print("Erro ao criar produto:", str(e))
+        logger.info("Erro ao criar produto:", str(e))
         return jsonify({'erro': f'Erro ao criar produto: {str(e)}'}), 500
 
 
@@ -110,7 +100,9 @@ def listar_produtos():
     try:
         produtos = Produto.query.all()
         return produtos, 200
+    
     except Exception as e:
+        logger.error("Erro ao listar produtos")
         return jsonify({'erro': f'Erro ao listar produtos: {str(e)}'}), 500
 
 
@@ -119,9 +111,12 @@ def buscar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
+            logger.info(f"Produto não encontrado {produto}")
             return {"mensagem": "Loja não encontrada"}, 404
         return marshal(produto, produto_fields), 200
+    
     except Exception as e:
+        logger.error("Erro aao buscar produto")
         return {'erro': f'Erro ao buscar produto: {str(e)}'}, 500
 
 
@@ -130,6 +125,7 @@ def atualizar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
+            logger.info(f"Produto não encontrado {produto}")
             return {"mensagem": "produto não encontrado"}, 404
 
         dados = parser.parse_args()
@@ -144,6 +140,7 @@ def atualizar_produto(id):
         return marshal(produto, produto_fields), 200
     
     except Exception as e:
+        logger.info(f"Erro ao atualizar produto {e}")
         return jsonify({'erro': f'Erro ao atualizar produto: {str(e)}'}), 500
 
 
@@ -152,11 +149,14 @@ def deletar_produto(id):
     try:
         produto = Produto.query.get(id)
         if not produto:
+            logger.info(f"Produto não encontrado {produto}")
             return {"mensagem": "produto não encontrado"}, 404
 
         db.session.delete(produto)
         db.session.commit()
         
         return jsonify({'mensagem': 'Produto deletado com sucesso'}), 200
+    
     except Exception as e:
+        logger.info(f"Produto não encontrado {produto}")
         return jsonify({'erro': f'Erro ao deletar produto: {str(e)}'}), 500

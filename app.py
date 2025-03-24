@@ -15,7 +15,6 @@ migrate.init_app(app, db)
 
 with app.app_context():
     db.create_all()
-    print("Banco de dados e tabelas criados com sucesso!")
 
 app.register_blueprint(loja_bp, url_prefix="/lojas")
 app.register_blueprint(produto_bp, url_prefix="/produtos")

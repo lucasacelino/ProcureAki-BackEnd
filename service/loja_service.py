@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_restful import marshal_with, reqparse, marshal
 
 from helpers.database import db
+from helpers.logging import logger
 from models.Loja import Loja, loja_fields
 from models.Endereco import Endereco
 from models.Categoria import Categoria
@@ -28,7 +29,9 @@ def criar_loja():
         dados = parser.parse_args()
         endereco_data = dados.get("endereco")
         if not endereco_data:
+            logger.info("É obrigatório passar os dados do endereço")
             return jsonify({'messagem': 'É obrigatório passar os dados do endereço'})
+        
         endereco = Endereco(
             cep = endereco_data["cep"],
             logradouro = endereco_data["logradouro"],
@@ -61,6 +64,8 @@ def criar_loja():
         db.session.add(localizacao)
         db.session.commit()
         
+        logger.info("")
+        
         
         nova_loja = Loja(
             nome = dados["nome"],
@@ -77,10 +82,13 @@ def criar_loja():
 
         db.session.add(nova_loja)
         db.session.commit()
+        
+        logger.info("Loja criada com sucesso!")
 
         return jsonify({"message": "Loja cadastrada com sucesso!"}), 201
     
     except Exception as e:
+        logger.error(f"Erro ao criar produto: {e}")
         return jsonify({'erro': f'Erro ao criar Loja: {str(e)}'}), 500
 
 
@@ -111,6 +119,7 @@ def atualizarDadosLoja(loja_id):
     try:
         loja = Loja.query.get(loja_id)
         if not loja:
+            logger.info()
             return {"mensagem": "Loja não encontrada"}, 404
 
         dados = request.json
@@ -120,11 +129,14 @@ def atualizarDadosLoja(loja_id):
         loja.horario_funcionamento = dados.get("horario_funcionamento", loja.horario_funcionamento)
         loja.telefone = dados.get("telefone", loja.telefone)
         loja.email = dados.get("email", loja.email)
+        
+        logger.info("Loja atualizada com sucesso")
 
         db.session.commit()
         return loja, 200
     
     except Exception as e:
+        logger.error(f"Erro ao atualizar: {e}")
         return jsonify({'erro': f'Erro ao atualizar loja: {str(e)}'}), 500
 
 
@@ -137,7 +149,9 @@ def deletar_loja(loja_id):
 
         db.session.delete(loja)
         db.session.commit()
+        logger.info("Loja deletada com sucesso.")
         return {"mensagem": "Loja deletada com sucesso"}, 200
     
     except Exception as e:
+        logger.error(f"Erro ao deletar loja {e}")
         return jsonify({'erro': f'Erro ao deletar loja: {str(e)}'}), 500
