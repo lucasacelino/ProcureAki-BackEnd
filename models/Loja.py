@@ -18,7 +18,7 @@ class TimeField(fields.Field):
         try:
             return datetime.strptime(value, '%H:%M').time()
         except ValueError as error:
-            return jsonify({'error': 'Hora não validada'})
+            return jsonify({'error': str(error)})
 
 loja_fields = {
     'id': fields.Integer,
